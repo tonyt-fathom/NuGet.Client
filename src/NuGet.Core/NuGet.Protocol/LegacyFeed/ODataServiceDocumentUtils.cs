@@ -42,31 +42,14 @@ static internal class ODataServiceDocumentUtils
         }
         catch (Exception ex) when (!(ex is FatalProtocolException) && (!(ex is OperationCanceledException)))
         {
-            WebException webEx = ex.InnerException as WebException;
-            if (webEx != null && webEx.Status == WebExceptionStatus.NameResolutionFailure)
+            HttpRequestException httpEx = ex as HttpRequestException;
+            if (httpEx != null)
             {
-                var message = string.Format(
-                    CultureInfo.CurrentCulture,
-                    Strings.Http_CommunicationFailedWithDetails,
-                    url,
-                    webEx.Message);
-                throw new FatalProtocolException(message, ex, NuGetLogCode.NU1305);
+                HttpRequestExceptionUtility.ThrowFatalProtocolExceptionIfCritical(httpEx, url);
             }
-            SocketException sockEx = ex.InnerException as SocketException;
-            if (sockEx != null)
-            {
-                var message = string.Format(
-                    CultureInfo.CurrentCulture,
-                    Strings.Http_CommunicationFailedWithDetails,
-                    url,
-                    sockEx.Message);
-                throw new FatalProtocolException(message, ex, NuGetLogCode.NU1305);
-            }
-            else
-            {
-                string message = string.Format(CultureInfo.CurrentCulture, Strings.Log_FailedToReadServiceIndex, url);
-                throw new FatalProtocolException(message, ex);
-            }
+
+            string message = string.Format(CultureInfo.CurrentCulture, Strings.Log_FailedToReadServiceIndex, url);
+            throw new FatalProtocolException(message, ex);
         }
 
         // Trim the query string or any trailing slash.

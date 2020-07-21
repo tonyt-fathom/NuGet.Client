@@ -199,12 +199,12 @@ namespace NuGet.Common
         NU1303 = 1303,
 
         /// <summary>
-        /// Feed was Not Found, server exists
+        /// Url was Not Found, server exists
         /// </summary>
         NU1304 = 1304,
 
         /// <summary>
-        /// Host name not resolved
+        /// Communication failed to the package source
         /// </summary>
         NU1305 = 1305,
 

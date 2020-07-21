@@ -107,7 +107,7 @@ namespace NuGet.Protocol.FuncTest
             FatalProtocolException ex = await Assert.ThrowsAsync<FatalProtocolException>(async () => await repo.GetResourceAsync<DownloadResource>());
 
             Assert.NotNull(ex);
-            Assert.Equal(NuGetLogCode.NU1305, ex.LogCode);
+            Assert.Equal(NuGetLogCode.NU1300, ex.LogCode);
         }
 
         [Fact]

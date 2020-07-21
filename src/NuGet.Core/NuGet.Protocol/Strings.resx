@@ -342,8 +342,8 @@ The "ms" should be localized to the abbreviation for milliseconds.</comment>
     <value>The server responded with HTTP '403 Forbidden' when accessing the source '{0}'. This suggests that the server has authenticated your identity but has not permitted you to access the requested resource. Provide credentials that have permissions to view this resource.</value>
     <comment>{0} is the source that needs credentials to be accessed.</comment>
   </data>
-  <data name="Http_CredentialsForNotFound" xml:space="preserve">
-    <value>The server responded with HTTP '404 Not Found' when accessing the source '{0}'. This suggests that the server has authenticated your identity but you are requesting a resource which doesn't exist. Change the URL to a resource that exists.</value>
+  <data name="Http_UrlNotFound" xml:space="preserve">
+    <value>The server responded with HTTP '404 Not Found' when accessing the source '{0}'. This suggests that the server reported that the URL requested does not exist. Change the URL to a resource that exists.</value>
     <comment>{0} is the source that needs credentials to be accessed.</comment>
   </data>
   <data name="Http_CredentialsForProxy" xml:space="preserve">

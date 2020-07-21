@@ -1,4 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
@@ -59,7 +59,7 @@ namespace NuGet.Protocol.FuncTest
                 await repo.GetResourceAsync<ODataServiceDocumentResourceV2>());
 
             Assert.NotNull(ex);
-            Assert.Equal(NuGetLogCode.NU1305, ex.LogCode);
+            Assert.Equal(NuGetLogCode.NU1300, ex.LogCode);
             Assert.NotNull(ex.InnerException);
             Assert.IsType<HttpRequestException>(ex.InnerException);
         }

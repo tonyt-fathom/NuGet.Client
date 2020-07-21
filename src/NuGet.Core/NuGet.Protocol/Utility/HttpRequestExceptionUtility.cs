@@ -49,7 +49,7 @@ namespace NuGet.Protocol.Core.Types
                     logCode = NuGetLogCode.NU1303;
                     break;
                 case HttpStatusCode.NotFound:
-                    message = string.Format(CultureInfo.CurrentCulture, Strings.Http_CredentialsForNotFound, url);
+                    message = string.Format(CultureInfo.CurrentCulture, Strings.Http_UrlNotFound, url);
                     logCode = NuGetLogCode.NU1304;
                     break;
                 case HttpStatusCode.ProxyAuthenticationRequired:

@@ -555,26 +555,7 @@ namespace NuGet.Protocol
                 }
                 catch (HttpRequestException ex) when (retry == maxRetries)
                 {
-                    WebException webEx = ex.InnerException as WebException;
-                    if (webEx != null && webEx.Status == WebExceptionStatus.NameResolutionFailure)
-                    {
-                        var message = string.Format(
-                            CultureInfo.CurrentCulture,
-                            Strings.Http_CommunicationFailedWithDetails,
-                            uri,
-                            webEx.Message);
-                        throw new FatalProtocolException(message, ex, NuGetLogCode.NU1305);
-                    }
-                    SocketException sockEx = ex.InnerException as SocketException;
-                    if (sockEx != null)
-                    {
-                        var message = string.Format(
-                            CultureInfo.CurrentCulture,
-                            Strings.Http_CommunicationFailedWithDetails,
-                            uri,
-                            sockEx.Message);
-                        throw new FatalProtocolException(message, ex, NuGetLogCode.NU1305);
-                    }
+                    HttpRequestExceptionUtility.ThrowFatalProtocolExceptionIfCritical(httpEx, uri);
                     RaisePackageRetrievalError(id, uri, ex);
                 }
                 catch (Exception ex) when (retry < maxRetries)

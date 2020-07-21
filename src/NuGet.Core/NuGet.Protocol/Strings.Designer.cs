@@ -241,15 +241,6 @@ namespace NuGet.Protocol {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The server responded with HTTP &apos;404 Not Found&apos; when accessing the source &apos;{0}&apos;. This suggests that the server has authenticated your identity but you are requesting a resource which doesn&apos;t exist. Change the URL to a resource that exists..
-        /// </summary>
-        internal static string Http_CredentialsForNotFound {
-            get {
-                return ResourceManager.GetString("Http_CredentialsForNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The server responded with HTTP &apos;407 Proxy Authentication Required&apos; when accessing the proxy &apos;{0}&apos;. This suggests that the server needs credentials to authenticate your identity to use a proxy. Provide credentials to access this resource..
         /// </summary>
         internal static string Http_CredentialsForProxy {
@@ -291,6 +282,15 @@ namespace NuGet.Protocol {
         internal static string Http_Timeout {
             get {
                 return ResourceManager.GetString("Http_Timeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The server responded with HTTP &apos;404 Not Found&apos; when accessing the source &apos;{0}&apos;. This suggests that the server reported that the URL requested does not exist. Change the URL to a resource that exists..
+        /// </summary>
+        internal static string Http_UrlNotFound {
+            get {
+                return ResourceManager.GetString("Http_UrlNotFound", resourceCulture);
             }
         }
         
