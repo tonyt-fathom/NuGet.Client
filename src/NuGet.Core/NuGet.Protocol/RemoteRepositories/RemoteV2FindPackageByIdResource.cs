@@ -553,10 +553,10 @@ namespace NuGet.Protocol
 
                     return results;
                 }
-                catch (HttpRequestException ex) when (retry == maxRetries)
+                catch (HttpRequestException httpEx) when (retry == maxRetries)
                 {
                     HttpRequestExceptionUtility.ThrowFatalProtocolExceptionIfCritical(httpEx, uri);
-                    RaisePackageRetrievalError(id, uri, ex);
+                    RaisePackageRetrievalError(id, uri, httpEx);
                 }
                 catch (Exception ex) when (retry < maxRetries)
                 {
