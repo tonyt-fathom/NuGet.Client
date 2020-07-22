@@ -249,18 +249,7 @@ namespace NuGet.Commands
                 }
                 else
                 {
-                    NuGetLogCode logCode = e.LogCode;
-
-                    RestoreLogMessage logMessage = null;
-                    if (e.InnerException != null)
-                    {
-                        logMessage = RestoreLogMessage.CreateError(logCode, e.Message + Environment.NewLine + e.InnerException.Message);
-                    }
-                    else
-                    {
-                        logMessage = RestoreLogMessage.CreateError(logCode, e.Message);
-                    }
-
+                    RestoreLogMessage logMessage = RestoreLogMessage.CreateError(e.LogCode, ExceptionUtilities.DisplayMessage(e));
                     await logger.LogAsync(logMessage);
                 }
             }

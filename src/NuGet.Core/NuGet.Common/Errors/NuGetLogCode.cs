@@ -204,11 +204,6 @@ namespace NuGet.Common
         NU1304 = 1304,
 
         /// <summary>
-        /// Communication failed to the package source
-        /// </summary>
-        NU1305 = 1305,
-
-        /// <summary>
         /// Feed needs Proxy Authentication
         /// </summary>
         NU1307 = 1307,

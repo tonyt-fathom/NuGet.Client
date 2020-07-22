@@ -849,7 +849,7 @@ namespace NuGet.CommandLine.Test
                 result.Item1 != 0,
                 "The run did not fail as desired. Simply got this output:" + result.Item2);
 
-                Assert.Contains($"Unable to load the service index for source", result.Item3);
+                Assert.Contains($"Unable to load the service index for source", result.AllOutput);
         }
 
         [Theory]
@@ -901,8 +901,8 @@ namespace NuGet.CommandLine.Test
                 "The run did not fail as desired. Simply got this output:" + result.Item2);
 
             Assert.True(
-                result.Item3.Contains($"Unable to load the service index for source '{invalidInput}'."),
-                "Expected error message not found in " + result.Item3
+                result.AllOutput.Contains($"Unable to load the service index for source '{invalidInput}'."),
+                "Expected error message not found in " + result.AllOutput
                 );
         }
 

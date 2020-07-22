@@ -1983,12 +1983,12 @@ namespace NuGet.Commands.FuncTest
 
                 // Act & Assert
                 var command = new RestoreCommand(request);
-                var result = await command.ExecuteAsync();
+                RestoreResult result = await command.ExecuteAsync();
                 await result.CommitAsync(logger, CancellationToken.None);
 
                 Assert.False(result.Success);
                 Assert.Equal(3, logger.ErrorMessages.Count());
-                var errors = logger.ErrorMessages.ToArray();
+                string[] errors = logger.ErrorMessages.ToArray();
                 Assert.Contains("Failed to retrieve information about", errors[0]);
                 Assert.Contains("Failed to retrieve information about", errors[1]);
                 Assert.Contains("No packages exist with this id in source(s): https://failingSource", errors[2]);

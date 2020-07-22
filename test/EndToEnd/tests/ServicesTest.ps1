@@ -423,7 +423,7 @@ function Test-InstallPackageAPIUnreachableSource
     # Act&Assert
     Assert-Throws {
         [API.Test.InternalAPITestHook]::InstallPackageApi("http://packagesource", "owin", "1.0.0", $false)
-    } "Exception calling `"InstallPackageApi`" with `"4`" argument(s): `"Communication failed to the package source with `"The remote name could not be resolved: 'packagesource'`" error.  Package source: 'http://packagesource'.`""
+    } "Exception calling `"InstallPackageApi`" with `"4`" argument(s): `"Communication failed to the package source with `"Unable to load the service index for source 'http://packagesource'.`""
     Assert-NoPackage $p "owin"
 }
 
