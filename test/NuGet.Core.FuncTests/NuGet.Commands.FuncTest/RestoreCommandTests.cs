@@ -1989,8 +1989,8 @@ namespace NuGet.Commands.FuncTest
                 Assert.False(result.Success);
                 Assert.Equal(3, logger.ErrorMessages.Count());
                 var errors = logger.ErrorMessages.ToArray();
-                Assert.Contains("Communication failed to the package source", errors[0]);
-                Assert.Contains("Communication failed to the package source", errors[1]);
+                Assert.Contains("Failed to retrieve information about", errors[0]);
+                Assert.Contains("Failed to retrieve information about", errors[1]);
                 Assert.Contains("No packages exist with this id in source(s): https://failingSource", errors[2]);
             }
         }
