@@ -2033,8 +2033,7 @@ namespace NuGet.Commands.FuncTest
                 await result.CommitAsync(logger, CancellationToken.None);
 
                 Assert.False(result.Success);
-                Assert.Equal(1, logger.ErrorMessages.Count());
-                Assert.Contains("local source", string.Join(Environment.NewLine, logger.ErrorMessages));
+                Assert.Contains("NU1302", string.Join(Environment.NewLine, logger.ErrorMessages));
             }
         }
 
