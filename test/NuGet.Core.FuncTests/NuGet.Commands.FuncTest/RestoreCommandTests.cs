@@ -2029,7 +2029,7 @@ namespace NuGet.Commands.FuncTest
 
                 // Act & Assert
                 var command = new RestoreCommand(request);
-                var result = await command.ExecuteAsync();
+                RestoreResult result = await command.ExecuteAsync();
                 await result.CommitAsync(logger, CancellationToken.None);
 
                 Assert.False(result.Success);
