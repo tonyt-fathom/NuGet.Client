@@ -900,10 +900,7 @@ namespace NuGet.CommandLine.Test
                 result.Item1 != 0,
                 "The run did not fail as desired. Simply got this output:" + result.Item2);
 
-            Assert.True(
-                result.AllOutput.Contains($"Unable to load the service index for source '{invalidInput}'."),
-                "Expected error message not found in " + result.AllOutput
-                );
+            Assert.Contains($"Unable to load the service index for source '{invalidInput}'.", result.AllOutput);
         }
 
         [Theory]

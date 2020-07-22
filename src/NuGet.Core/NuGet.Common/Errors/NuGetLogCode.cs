@@ -184,7 +184,7 @@ namespace NuGet.Common
         NU1300 = 1300,
 
         /// <summary>
-        /// Feed was Unauthorized
+        /// Feed was Unauthorized (HTTP 401)
         /// </summary>
         NU1301 = 1301,
 
@@ -194,17 +194,17 @@ namespace NuGet.Common
         NU1302 = 1302,
 
         /// <summary>
-        /// Feed was Forbidden
+        /// Feed was Forbidden (HTTP 403)
         /// </summary>
         NU1303 = 1303,
 
         /// <summary>
-        /// Url was Not Found, server exists
+        /// Url was Not Found, server exists (HTTP 404)
         /// </summary>
         NU1304 = 1304,
 
         /// <summary>
-        /// Feed needs Proxy Authentication
+        /// Feed needs Proxy Authentication (HTTP 407)
         /// </summary>
         NU1307 = 1307,
 

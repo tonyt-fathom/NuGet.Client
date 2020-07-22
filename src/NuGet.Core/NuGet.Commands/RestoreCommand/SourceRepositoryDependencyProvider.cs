@@ -5,7 +5,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.Common;
@@ -17,7 +16,6 @@ using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
-using NuGet.Protocol.Plugins;
 using NuGet.Versioning;
 
 namespace NuGet.Commands
@@ -558,18 +556,7 @@ namespace NuGet.Commands
                 }
                 else
                 {
-                    NuGetLogCode logCode = e.LogCode;
-
-                    RestoreLogMessage logMessage = null;
-                    if (e.InnerException != null)
-                    {
-                        logMessage = RestoreLogMessage.CreateError(logCode, e.Message + Environment.NewLine + e.InnerException.Message);
-                    }
-                    else
-                    {
-                        logMessage = RestoreLogMessage.CreateError(logCode, e.Message);
-                    }
-
+                    RestoreLogMessage logMessage = RestoreLogMessage.CreateError(e.LogCode, ExceptionUtilities.DisplayMessage(e));
                     await logger.LogAsync(logMessage);
                 }
             }

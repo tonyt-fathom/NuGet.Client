@@ -1,7 +1,6 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,7 +9,6 @@ using System.Threading.Tasks;
 using NuGet.Configuration;
 using NuGet.Packaging;
 using NuGet.ProjectModel;
-using NuGet.Protocol.Core.Types;
 using NuGet.Test.Utility;
 using Xunit;
 
@@ -91,7 +89,7 @@ namespace NuGet.Commands.Test
 
                 // Act
                 var command = new RestoreCommand(request);
-                var result = await command.ExecuteAsync();
+                RestoreResult result = await command.ExecuteAsync();
                 var lockFile = result.LockFile;
                 await result.CommitAsync(logger, CancellationToken.None);
 
@@ -188,7 +186,7 @@ namespace NuGet.Commands.Test
 
                 // Act
                 var command = new RestoreCommand(request);
-                var result = await command.ExecuteAsync();
+                RestoreResult result = await command.ExecuteAsync();
                 var lockFile = result.LockFile;
                 await result.CommitAsync(logger, CancellationToken.None);
 
@@ -278,7 +276,7 @@ namespace NuGet.Commands.Test
 
                 // Act
                 var command = new RestoreCommand(request);
-                var result = await command.ExecuteAsync();
+                RestoreResult result = await command.ExecuteAsync();
                 var lockFile = result.LockFile;
                 await result.CommitAsync(logger, CancellationToken.None);
 
@@ -366,7 +364,7 @@ namespace NuGet.Commands.Test
 
                 // Act
                 var command = new RestoreCommand(request);
-                var result = await command.ExecuteAsync();
+                RestoreResult result = await command.ExecuteAsync();
                 var lockFile = result.LockFile;
                 await result.CommitAsync(logger, CancellationToken.None);
 
@@ -451,13 +449,13 @@ namespace NuGet.Commands.Test
 
                 // Act & Assert
                 var command = new RestoreCommand(request);
-                var result = await command.ExecuteAsync();
+                RestoreResult result = await command.ExecuteAsync();
                 await result.CommitAsync(logger, CancellationToken.None);
 
                 Assert.False(result.Success);
                 // ideally, this error wouldn't repeat itself in the same project.
                 Assert.Equal(2, logger.ErrorMessages.Count());
-                var errors = logger.ErrorMessages.ToArray();
+                string[] errors = logger.ErrorMessages.ToArray();
                 Assert.Contains("fallback folder", errors[0]);
                 Assert.Contains("fallback folder", errors[1]);
             }
