@@ -435,21 +435,7 @@ namespace NuGet.Protocol.Core.Types
 
             //No exception to the rule specified.
 
-#if !NETCOREAPP5_0
-            // Before calling EnsureSuccessStatusCode(), squirrel away statuscode, in order to add it to exception.
-            HttpStatusCode statusCode = response.StatusCode;
-            try
-            {
-#endif
-                response.EnsureSuccessStatusCode();
-#if !NETCOREAPP5_0
-            }
-            catch (HttpRequestException ex)
-            {
-                ex.Data["StatusCode"] = statusCode;
-                throw;
-            }
-#endif
+            HttpRequestExceptionUtility.EnsureSuccessAndStashStatusCodeIfThrows(HttpResponseMessage response);
             return null;
         }
 
