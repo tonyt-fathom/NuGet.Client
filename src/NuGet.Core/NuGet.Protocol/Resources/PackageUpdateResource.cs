@@ -435,7 +435,7 @@ namespace NuGet.Protocol.Core.Types
 
             //No exception to the rule specified.
 
-            HttpRequestExceptionUtility.EnsureSuccessAndStashStatusCodeIfThrows(HttpResponseMessage response);
+            HttpRequestExceptionUtility.EnsureSuccessAndStashStatusCodeIfThrows(response);
             return null;
         }
 
