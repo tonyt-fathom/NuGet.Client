@@ -82,6 +82,8 @@ namespace NuGet.Protocol
 #endif
         }
 
+#if !NETCOREAPP5_0
         private const string StatusCode = "StatusCode";
+#endif
     }
 }
