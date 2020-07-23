@@ -1963,7 +1963,8 @@ namespace NuGet.Commands.FuncTest
             // Arrange
             var sources = new List<PackageSource>
             {
-                new PackageSource("https://failingSource")
+                new PackageSource("https://failingSource"),
+                new PackageSource(NuGetConstants.V3FeedUrl)
             };
 
             using (var packagesDir = TestDirectory.Create())
@@ -1997,9 +1998,9 @@ namespace NuGet.Commands.FuncTest
                 Assert.False(result.Success);
                 Assert.Equal(3, logger.ErrorMessages.Count());
                 string[] errors = logger.ErrorMessages.ToArray();
-                Assert.Contains("Failed to retrieve information about", errors[0]);
-                Assert.Contains("Failed to retrieve information about", errors[1]);
-                Assert.Contains("No packages exist with this id in source(s): https://failingSource", errors[2]);
+                Assert.StartsWith("NU1300", errors[0]);
+                Assert.StartsWith("NU1300", errors[1]);
+                Assert.StartsWith("NU1101", errors[2]);
             }
         }
 
