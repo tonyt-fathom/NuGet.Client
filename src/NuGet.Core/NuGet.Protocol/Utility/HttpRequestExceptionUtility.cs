@@ -1,14 +1,12 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using NuGet.Common;
 
-namespace NuGet.Protocol.Core.Types
+namespace NuGet.Protocol
 {
     internal static class HttpRequestExceptionUtility
     {
@@ -20,9 +18,9 @@ namespace NuGet.Protocol.Core.Types
             statusCode = ex.StatusCode;
 #else
             // All places which might raise an HttpRequestException need to put StatusCode in exception object.
-            if (ex.Data.Contains("StatusCode"))
+            if (ex.Data.Contains(StatusCode))
             {
-                statusCode = (HttpStatusCode)ex.Data["StatusCode"];
+                statusCode = (HttpStatusCode)ex.Data[StatusCode];
             }
 #endif
 
@@ -37,7 +35,7 @@ namespace NuGet.Protocol.Core.Types
 
             // For these status codes, we throw exception.
             // Ideally, we add more status codes to this switch statement as we run into other codes that
-            // will benifit with a better error experience.
+            // will benefit with a better error experience.
             switch (statusCode)
             {
                 case HttpStatusCode.Unauthorized:
@@ -63,5 +61,26 @@ namespace NuGet.Protocol.Core.Types
                 throw new FatalProtocolException(message, ex, logCode.Value);
             }
         }
+
+        internal static void EnsureSuccessAndStashStatusCodeIfThrows(HttpResponseMessage response)
+        {
+#if !NETCOREAPP5_0
+            // Before calling EnsureSuccessStatusCode(), squirrel away statuscode, in order to add it to exception.
+            HttpStatusCode statusCode = response.StatusCode;
+            try
+            {
+#endif
+                response.EnsureSuccessStatusCode();
+#if !NETCOREAPP5_0
+            }
+            catch (HttpRequestException ex)
+            {
+                ex.Data[StatusCode] = statusCode;
+                throw;
+            }
+#endif
+        }
+
+        private static readonly string StatusCode = "StatusCode";
     }
 }

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NuGet.Commands.Test;
+using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.Frameworks;
 using NuGet.LibraryModel;
@@ -1913,7 +1914,8 @@ namespace NuGet.Commands.FuncTest
             // Arrange
             var sources = new List<PackageSource>
             {
-                new PackageSource("https://failingSource")
+                new PackageSource("https://failingSource"),
+                new PackageSource(NuGetConstants.V3FeedUrl)
             };
 
             using (var packagesDir = TestDirectory.Create())
@@ -1941,11 +1943,17 @@ namespace NuGet.Commands.FuncTest
 
                 // Act
                 var command = new RestoreCommand(request);
-                var result = await command.ExecuteAsync();
+                RestoreResult result = await command.ExecuteAsync();
                 await result.CommitAsync(logger, CancellationToken.None);
 
                 // Assert
                 Assert.False(result.Success);
+                IAssetsLogMessage[] logMessages = result.LogMessages.ToArray();
+                Assert.Equal(4, logMessages.Count());
+                Assert.Equal(NuGetLogCode.NU1300, logMessages[0].Code);
+                Assert.Equal(NuGetLogCode.NU1300, logMessages[1].Code);
+                Assert.Equal(NuGetLogCode.NU1300, logMessages[2].Code);
+                Assert.Equal(NuGetLogCode.NU1101, logMessages[3].Code);
             }
         }
 

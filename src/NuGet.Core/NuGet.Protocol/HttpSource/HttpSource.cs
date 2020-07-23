@@ -230,23 +230,9 @@ namespace NuGet.Protocol
         /// <returns>Response StatusCode</returns>
         private static HttpStatusCode EnsureSuccessStatusCode(HttpResponseMessage response)
         {
-#if !NETCOREAPP5_0
-            // Before calling EnsureSuccessStatusCode(), squirrel away statuscode, in order to add it to exception.
-            try
-            {
-#endif
-                response.EnsureSuccessStatusCode();
-#if !NETCOREAPP5_0
-            }
-            catch (HttpRequestException ex)
-            {
-                ex.Data["StatusCode"] = response.StatusCode;
-                throw;
-            }
-#endif
+            HttpRequestExceptionUtility.EnsureSuccessAndStashStatusCodeIfThrows(response);
             return response.StatusCode;
         }
-
 
         public async Task<T> ProcessStreamAsync<T>(
             HttpSourceRequest request,

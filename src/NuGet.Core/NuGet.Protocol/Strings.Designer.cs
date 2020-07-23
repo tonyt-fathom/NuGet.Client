@@ -214,24 +214,6 @@ namespace NuGet.Protocol {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Communication failed to the package source.  Source: &apos;{0}&apos;..
-        /// </summary>
-        internal static string Http_CommunicationFailed {
-            get {
-                return ResourceManager.GetString("Http_CommunicationFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Communication failed to the package source with &quot;{1}&quot; error.  Package source: &apos;{0}&apos;..
-        /// </summary>
-        internal static string Http_CommunicationFailedWithDetails {
-            get {
-                return ResourceManager.GetString("Http_CommunicationFailedWithDetails", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The server responded with HTTP &apos;403 Forbidden&apos; when accessing the source &apos;{0}&apos;. This suggests that the server has authenticated your identity but has not permitted you to access the requested resource. Provide credentials that have permissions to view this resource..
         /// </summary>
         internal static string Http_CredentialsForForbidden {
@@ -286,7 +268,7 @@ namespace NuGet.Protocol {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The server responded with HTTP &apos;404 Not Found&apos; when accessing the source &apos;{0}&apos;. This suggests that the server reported that the URL requested does not exist. Change the URL to a resource that exists..
+        ///   Looks up a localized string similar to The server responded with HTTP &apos;404 Not Found&apos; when accessing the source &apos;{0}&apos;. Change the URL to a resource that exists..
         /// </summary>
         internal static string Http_UrlNotFound {
             get {
