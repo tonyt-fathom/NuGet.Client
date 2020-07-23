@@ -1451,7 +1451,7 @@ namespace NuGet.Commands.FuncTest
 
                 // Assert
                 Assert.Equal(1, logger.Warnings); // Warnings are combined on message
-                Assert.Contains("TestProject depends on Newtonsoft.Json (>= 7.0.0) but Newtonsoft.Json 7.0.0 was not found. An approximate best match of Newtonsoft.Json 7.0.1 was resolved.", logger.Messages);
+                Assert.Contains("NU1603: TestProject depends on Newtonsoft.Json (>= 7.0.0) but Newtonsoft.Json 7.0.0 was not found. An approximate best match of Newtonsoft.Json 7.0.1 was resolved.", logger.Messages);
             }
         }
 
@@ -1493,7 +1493,7 @@ namespace NuGet.Commands.FuncTest
 
                 // Assert
                 Assert.Equal(1, logger.Warnings); // Warnings for all graphs are combined
-                Assert.Contains("TestProject depends on Newtonsoft.Json (>= 7.0.0) but Newtonsoft.Json 7.0.0 was not found. An approximate best match of Newtonsoft.Json 7.0.1 was resolved.", logger.Messages);
+                Assert.Contains("NU1603: TestProject depends on Newtonsoft.Json (>= 7.0.0) but Newtonsoft.Json 7.0.0 was not found. An approximate best match of Newtonsoft.Json 7.0.1 was resolved.", logger.Messages);
             }
         }
 
@@ -1996,11 +1996,9 @@ namespace NuGet.Commands.FuncTest
                 await result.CommitAsync(logger, CancellationToken.None);
 
                 Assert.False(result.Success);
-                Assert.Equal(3, logger.ErrorMessages.Count());
+                Assert.Equal(1, logger.ErrorMessages.Count());
                 string[] errors = logger.ErrorMessages.ToArray();
                 Assert.StartsWith("NU1300", errors[0]);
-                Assert.StartsWith("NU1300", errors[1]);
-                Assert.StartsWith("NU1101", errors[2]);
             }
         }
 
