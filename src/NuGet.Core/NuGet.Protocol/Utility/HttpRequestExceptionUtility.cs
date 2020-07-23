@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using NuGet.Common;
+using NuGet.Protocol.Core.Types;
 
 namespace NuGet.Protocol
 {
@@ -81,6 +82,6 @@ namespace NuGet.Protocol
 #endif
         }
 
-        private static readonly string StatusCode = "StatusCode";
+        private const string StatusCode = "StatusCode";
     }
 }
