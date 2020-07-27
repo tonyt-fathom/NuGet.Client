@@ -1,0 +1,14 @@
+NuGet.Protocol.Core.Types.IPackageSearchMetadata.GetVulnerabilityMetadataAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<NuGet.Protocol.PackageVulnerabilityMetadata>>
+NuGet.Protocol.Core.Types.PackageSearchMetadataBuilder.ClonedPackageSearchMetadata.GetVulnerabilityMetadataAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<NuGet.Protocol.PackageVulnerabilityMetadata>>
+NuGet.Protocol.LocalPackageSearchMetadata.GetVulnerabilityMetadataAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<NuGet.Protocol.PackageVulnerabilityMetadata>>
+NuGet.Protocol.PackageSearchMetadata.GetVulnerabilityMetadataAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<NuGet.Protocol.PackageVulnerabilityMetadata>>
+NuGet.Protocol.PackageSearchMetadata.VulnerabilityMetadata.get -> System.Collections.Generic.IEnumerable<NuGet.Protocol.PackageVulnerabilityMetadata>
+NuGet.Protocol.PackageSearchMetadataV2Feed.GetVulnerabilityMetadataAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<NuGet.Protocol.PackageVulnerabilityMetadata>>
+NuGet.Protocol.PackageSearchMetadataV2Feed.VulnerabilityMetadata.get -> System.Collections.Generic.IEnumerable<NuGet.Protocol.PackageVulnerabilityMetadata>
+NuGet.Protocol.PackageVulnerabilityMetadata
+NuGet.Protocol.PackageVulnerabilityMetadata.AdvisoryUrl.get -> System.Uri
+NuGet.Protocol.PackageVulnerabilityMetadata.PackageVulnerabilityMetadata() -> void
+NuGet.Protocol.PackageVulnerabilityMetadata.Severity.get -> int
+const NuGet.Protocol.JsonProperties.AdvisoryUrl = "advisoryUrl" -> string
+const NuGet.Protocol.JsonProperties.Severity = "severity" -> string
+const NuGet.Protocol.JsonProperties.Vulnerabilities = "vulnerabilities" -> string
