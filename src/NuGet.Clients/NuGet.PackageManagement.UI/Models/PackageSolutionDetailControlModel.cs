@@ -75,6 +75,7 @@ namespace NuGet.PackageManagement.UI
                     {
                         project.InstalledVersion = installedVersion.PackageIdentity.Version;
                         hash.Add(installedVersion.PackageIdentity.Version);
+                        project.RequestedVersion = installedVersion.AllowedVersions.OriginalString;
                         project.AutoReferenced = (installedVersion as BuildIntegratedPackageReference)?.Dependency?.AutoReferenced == true;
                     }
                     else

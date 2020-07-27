@@ -583,6 +583,15 @@ namespace NuGet.PackageManagement.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requested.
+        /// </summary>
+        public static string ColumnHeader_RequestedVersion {
+            get {
+                return ResourceManager.GetString("ColumnHeader_RequestedVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Selected.
         /// </summary>
         public static string ColumnHeader_Selected {
