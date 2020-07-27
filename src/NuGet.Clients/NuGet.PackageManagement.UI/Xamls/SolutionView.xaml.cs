@@ -47,7 +47,8 @@ namespace NuGet.PackageManagement.UI
             _sortableColumns = new List<GridViewColumnHeader>
             {
                 _projectColumnHeader,
-                _versionColumnHeader
+                _versionColumnHeader,
+                _requestedColumnHeader
             };
 
             SortByColumn(_projectColumnHeader);
