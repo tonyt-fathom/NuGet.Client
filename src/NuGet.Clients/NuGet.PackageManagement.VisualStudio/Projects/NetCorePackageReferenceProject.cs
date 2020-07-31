@@ -42,7 +42,7 @@ namespace NuGet.PackageManagement.VisualStudio
 
         private readonly IProjectSystemCache _projectSystemCache;
         private readonly UnconfiguredProject _unconfiguredProject;
-        private PackageReference[] _installedPackages;
+        private IEnumerable<PackageReference> _installedPackages;
         private DateTime _lastTimeAssetsModified;
 
         public NetCorePackageReferenceProject(
@@ -219,23 +219,10 @@ namespace NuGet.PackageManagement.VisualStudio
         public async override Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync(CancellationToken token)
         {
             var packageSpec = GetPackageSpec();
-            // just the projecft file changes
+            
             if (packageSpec != null)
             {
-                var lockFilePath = await GetAssetsFilePathAsync();
-                var fileInfo = new FileInfo(lockFilePath);
-                 
-                if (fileInfo.Exists && fileInfo.LastWriteTimeUtc > _lastTimeAssetsModified)
-                {
-                    var lockFile = new LockFileFormat().Read(lockFilePath);
-                    var packageSpecAssets = lockFile.PackageSpec;
-
-                    _installedPackages = GetPackageReferences(packageSpec, packageSpecAssets, lockFile.Targets);
-                    _lastTimeAssetsModified = fileInfo.LastWriteTimeUtc;
-                } else
-                {
-                    _installedPackages = GetPackageReferences(packageSpec, null, null);
-                }
+                _installedPackages = await GetPackageReferences(packageSpec);
             }
             else
             {
@@ -245,9 +232,23 @@ namespace NuGet.PackageManagement.VisualStudio
             return _installedPackages;
         }
 
-        private static PackageReference[] GetPackageReferences(PackageSpec packageSpec, PackageSpec assetsPackageSpec, IList<LockFileTarget> targets = null)
+        private async Task<IEnumerable<PackageReference>> GetPackageReferences(PackageSpec packageSpec)
         {
             var frameworkSorter = new NuGetFrameworkSorter();
+
+            var lockFilePath = await GetAssetsFilePathAsync();
+            var fileInfo = new FileInfo(lockFilePath);
+            PackageSpec assetsPackageSpec = default;
+            IList<LockFileTarget> targets = default;
+
+            if (fileInfo.Exists && fileInfo.LastWriteTimeUtc > _lastTimeAssetsModified)
+            {
+                var lockFile = new LockFileFormat().Read(lockFilePath);
+                assetsPackageSpec = lockFile.PackageSpec;
+                targets = lockFile.Targets;
+
+                _lastTimeAssetsModified = fileInfo.LastWriteTimeUtc;
+            }
 
             return packageSpec
                .TargetFrameworks
@@ -272,7 +273,7 @@ namespace NuGet.PackageManagement.VisualStudio
 
             if(installedVersion == null)
             {
-                return new PackageIdentity(l.Name, l.LibraryRange?.VersionRange?.MinVersion);
+                return new PackageIdentity(l.Name, l.LibraryRange?.VersionRange?.MinVersion ?? new NuGetVersion(0, 0, 0)) ;
             }
 
             return new PackageIdentity(l.Name, installedVersion);

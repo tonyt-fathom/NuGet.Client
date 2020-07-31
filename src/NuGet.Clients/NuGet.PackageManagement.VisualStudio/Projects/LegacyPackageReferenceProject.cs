@@ -38,6 +38,8 @@ namespace NuGet.PackageManagement.VisualStudio
         private string _projectName;
         private string _projectUniqueName;
         private string _projectFullPath;
+        private IEnumerable<PackageReference> _installedPackages;
+        private DateTime _lastTimeAssetsModified;
 
         public LegacyPackageReferenceProject(
             IVsProjectAdapter vsProjectAdapter,
@@ -170,7 +172,8 @@ namespace NuGet.PackageManagement.VisualStudio
         public override async Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync(CancellationToken token)
         {
             // Settings are not needed for this purpose, this only finds the installed packages
-            return GetPackageReferences(await GetPackageSpecAsync(NullSettings.Instance));
+            _installedPackages = await GetPackageReferences(await GetPackageSpecAsync(NullSettings.Instance));
+            return _installedPackages;
         }
 
         public override async Task<bool> InstallPackageAsync(
@@ -333,33 +336,74 @@ namespace NuGet.PackageManagement.VisualStudio
             return settings.GetConfigFilePaths();
         }
 
-        private static PackageReference[] GetPackageReferences(PackageSpec packageSpec)
+        private async Task<IEnumerable<PackageReference>> GetPackageReferences(PackageSpec packageSpec)
         {
             var frameworkSorter = new NuGetFrameworkSorter();
 
+            var lockFilePath = await GetAssetsFilePathAsync();
+            var fileInfo = new FileInfo(lockFilePath);
+            PackageSpec assetsPackageSpec = default;
+            IList<LockFileTarget> targets = default;
+
+            if (fileInfo.Exists && fileInfo.LastWriteTimeUtc > _lastTimeAssetsModified)
+            {
+                var lockFile = new LockFileFormat().Read(lockFilePath);
+                assetsPackageSpec = lockFile.PackageSpec;
+                targets = lockFile.Targets;
+
+                _lastTimeAssetsModified = fileInfo.LastWriteTimeUtc;
+            }
+
             return packageSpec
                 .TargetFrameworks
-                .SelectMany(f => GetPackageReferences(f.Dependencies, f.FrameworkName))
+                .SelectMany(f => GetPackageReferences(f.Dependencies, f.FrameworkName, assetsPackageSpec, targets))
                 .GroupBy(p => p.PackageIdentity)
                 .Select(g => g.OrderBy(p => p.TargetFramework, frameworkSorter).First())
                 .ToArray();
         }
 
-        private static IEnumerable<PackageReference> GetPackageReferences(IEnumerable<LibraryDependency> libraries, NuGetFramework targetFramework)
+        private static IEnumerable<PackageReference> GetPackageReferences(IEnumerable<LibraryDependency> libraries, NuGetFramework targetFramework, PackageSpec assetsPackageSpec = null, IList<LockFileTarget> targets = null)
         {
+            TargetFrameworkInformation assetsTargetFrameworkInformation = assetsPackageSpec?.TargetFrameworks.First(t => t.FrameworkName == targetFramework);
+
             return libraries
                 .Where(l => l.LibraryRange.TypeConstraint == LibraryDependencyTarget.Package)
-                .Select(l => ToPackageReference(l, targetFramework));
+                .Select(l => ToPackageReference(l, targetFramework, assetsTargetFrameworkInformation, targets));
         }
 
-        private static PackageReference ToPackageReference(LibraryDependency library, NuGetFramework targetFramework)
+        private static PackageReference ToPackageReference(LibraryDependency library, NuGetFramework targetFramework, TargetFrameworkInformation assetsTargetFrameworkInformation, IList<LockFileTarget> targets)
         {
-            // The VersionRange can be null when the PackageReference items are for a project opted in the central package version management.
-            var identity = new PackageIdentity(
-                library.LibraryRange.Name,
-                library.LibraryRange.VersionRange?.MinVersion);
+            var installedVersion = GetInstalledVersion(library, targetFramework, assetsTargetFrameworkInformation, targets);
+            PackageIdentity identity = default;
+
+            if (installedVersion == null)
+            {
+                // The VersionRange can be null when the PackageReference items are for a project opted in the central package version management.
+                identity = new PackageIdentity(
+                    library.LibraryRange.Name,
+                    library.LibraryRange.VersionRange?.MinVersion);
+            }
+            else
+            {
+                identity = new PackageIdentity(library.Name, library.LibraryRange?.VersionRange?.MinVersion ?? new NuGetVersion(0, 0, 0));
+            }
 
             return new PackageReference(identity, targetFramework);
+        }
+
+        private static NuGetVersion GetInstalledVersion(LibraryDependency libraryProjectFile, NuGetFramework targetFramework, TargetFrameworkInformation assetsTargetFrameworkInformation, IList<LockFileTarget> targets)
+        {
+            LibraryDependency libraryAsset = assetsTargetFrameworkInformation?.Dependencies.First(e => e.Name == libraryProjectFile.Name);
+
+            if (libraryAsset == null)
+            {
+                return null;
+            }
+
+            return targets
+                .Where(t => t.TargetFramework.Equals(targetFramework) && string.IsNullOrEmpty(t.RuntimeIdentifier))
+                .SelectMany(l => l?.Libraries)
+                .First(a => a.Name.Equals(libraryAsset.Name, StringComparison.OrdinalIgnoreCase)).Version;
         }
 
         /// <summary>
