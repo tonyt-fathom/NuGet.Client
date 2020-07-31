@@ -305,25 +305,6 @@
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
 
-          <!-- the requested column -->
-          <GridViewColumn
-            DisplayMemberBinding="{Binding RequestedVersion,Converter={StaticResource VersionToStringConverter}}">
-            <GridViewColumn.Header>
-              <GridViewColumnHeader
-                AutomationProperties.Name="{x:Static local:Resources.ColumnHeader_Requested}"
-                x:Name="_requestedColumnHeader"
-                Click="ColumnHeader_Clicked"
-                Content="{x:Static local:Resources.ColumnHeader_Requested}"
-                local:SortableColumnHeaderAttachedProperties.SortPropertyName="RequestedVersion"
-                HorizontalContentAlignment="Left"
-                SizeChanged="SortableColumnHeader_SizeChanged"
-                PreviewKeyUp="SortableColumnHeader_PreviewKeyUp"
-                Focusable="True"
-                IsTabStop="True"
-                FocusVisualStyle="{DynamicResource ControlsFocusVisualStyle}"/>
-            </GridViewColumn.Header>
-          </GridViewColumn>
-
           <!-- the version column -->
           <GridViewColumn
             DisplayMemberBinding="{Binding InstalledVersion,Converter={StaticResource VersionToStringConverter}}">

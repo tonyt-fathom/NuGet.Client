@@ -25,13 +25,14 @@ namespace NuGet.ProjectManagement
         /// Create a PackageReference based on a LibraryDependency.
         /// </summary>
         /// <param name="dependency">Full PackageReference metadata.</param>
-        public BuildIntegratedPackageReference(LibraryDependency dependency, NuGetFramework projectFramework, PackageIdentity installedVersion)
+        public BuildIntegratedPackageReference(LibraryDependency dependency, NuGetFramework projectFramework, PackageIdentity installedVersion, string requestedVersion = null)
             : base(installedVersion,
                   targetFramework: projectFramework,
                   userInstalled: true,
                   developmentDependency: dependency?.SuppressParent == LibraryIncludeFlags.All,
                   requireReinstallation: false,
-                  allowedVersions: GetAllowedVersions(dependency))
+                  allowedVersions: GetAllowedVersions(dependency),
+                  requestedVersion)
         {
             if (dependency == null)
             {
