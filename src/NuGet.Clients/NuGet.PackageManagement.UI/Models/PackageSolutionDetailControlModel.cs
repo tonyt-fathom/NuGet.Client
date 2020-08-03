@@ -71,12 +71,15 @@ namespace NuGet.PackageManagement.UI
                 try
                 {
                     var installedVersion = GetInstalledPackage(project.NuGetProject, Id);
-                    if (installedVersion != null)
+                    if (installedVersion != null) // NuGet.ProjectModel.ProjectStyle.PackageReference
                     {
                         project.InstalledVersion = installedVersion.PackageIdentity.Version;
                         hash.Add(installedVersion.PackageIdentity.Version);
-                        project.RequestedVersion = installedVersion.AllowedVersions.OriginalString;
                         project.AutoReferenced = (installedVersion as BuildIntegratedPackageReference)?.Dependency?.AutoReferenced == true;
+                        if (project.NuGetProject.ProjectStyle.Equals(NuGet.ProjectModel.ProjectStyle.PackageReference))
+                        {
+                            project.RequestedVersion = installedVersion?.AllowedVersions?.OriginalString;
+                        }
                     }
                     else
                     {
