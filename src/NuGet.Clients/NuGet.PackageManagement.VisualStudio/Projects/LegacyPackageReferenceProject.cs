@@ -374,21 +374,16 @@ namespace NuGet.PackageManagement.VisualStudio
         private static PackageReference ToPackageReference(LibraryDependency library, NuGetFramework targetFramework, TargetFrameworkInformation assetsTargetFrameworkInformation, IList<LockFileTarget> targets)
         {
             var installedVersion = GetInstalledVersion(library, targetFramework, assetsTargetFrameworkInformation, targets);
-            PackageIdentity identity = default;
 
             if (installedVersion == null)
             {
                 // The VersionRange can be null when the PackageReference items are for a project opted in the central package version management.
-                identity = new PackageIdentity(
+                return new PackageReference(new PackageIdentity(
                     library.LibraryRange.Name,
-                    library.LibraryRange.VersionRange?.MinVersion);
-            }
-            else
-            {
-                identity = new PackageIdentity(library.Name, library.LibraryRange?.VersionRange?.MinVersion ?? new NuGetVersion(0, 0, 0));
+                    library.LibraryRange.VersionRange?.MinVersion), targetFramework);
             }
 
-            return new PackageReference(identity, targetFramework);
+            return new PackageReference(new PackageIdentity(library.LibraryRange.Name, installedVersion), targetFramework);
         }
 
         private static NuGetVersion GetInstalledVersion(LibraryDependency libraryProjectFile, NuGetFramework targetFramework, TargetFrameworkInformation assetsTargetFrameworkInformation, IList<LockFileTarget> targets)
