@@ -1183,7 +1183,6 @@ namespace NuGet.PackageManagement.VisualStudio.Test
 
         private LegacyPackageReferenceProject CreateLegacyPackageReferenceProjectNoPackages(TestDirectory testDirectory)
         {
-            var framework = NuGetFramework.Parse("netstandard13");
             var projectAdapter = CreateProjectAdapter(testDirectory);
 
             var projectServices = new TestProjectSystemServices();

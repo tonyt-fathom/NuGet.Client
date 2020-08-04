@@ -219,7 +219,7 @@ namespace NuGet.PackageManagement.VisualStudio
         public async override Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync(CancellationToken token)
         {
             var packageSpec = GetPackageSpec();
-            
+
             if (packageSpec != null)
             {
                 _installedPackages = await GetPackageReferences(packageSpec);
@@ -271,9 +271,9 @@ namespace NuGet.PackageManagement.VisualStudio
         {
             var installedVersion = GetInstalledVersion(l, targetFramework, assetsTargetFrameworkInformation, targets);
 
-            if(installedVersion == null)
+            if (installedVersion == null)
             {
-                return new PackageIdentity(l.Name, l.LibraryRange?.VersionRange?.MinVersion ?? new NuGetVersion(0, 0, 0)) ;
+                return new PackageIdentity(l.Name, l.LibraryRange?.VersionRange?.MinVersion ?? new NuGetVersion(0, 0, 0));
             }
 
             return new PackageIdentity(l.Name, installedVersion);
@@ -283,7 +283,7 @@ namespace NuGet.PackageManagement.VisualStudio
         {
             LibraryDependency libraryAsset = assetsTargetFrameworkInformation?.Dependencies.First(e => e.Name == libraryProjectFile.Name);
 
-            if(libraryAsset == null)
+            if (libraryAsset == null)
             {
                 return null;
             }

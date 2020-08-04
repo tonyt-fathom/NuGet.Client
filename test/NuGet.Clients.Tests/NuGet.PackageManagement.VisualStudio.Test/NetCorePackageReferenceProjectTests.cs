@@ -15,7 +15,6 @@ using NuGet.Commands;
 using NuGet.Configuration;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
-using NuGet.Packaging;
 
 namespace NuGet.PackageManagement.VisualStudio.Test
 {
