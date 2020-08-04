@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NuGet.Common;
 using NuGet.Frameworks;
 
@@ -34,6 +35,30 @@ namespace NuGet.Commands
                 isXnaWindowsPhoneProject: false);
         }
 
+        public static NuGetFramework GetProjectFramework(
+            string projectFilePath,
+            string targetFrameworkMoniker,
+            string targetFrameworkIdentifier,
+            string targetFrameworkVersion,
+            string targetFrameworkProfile,
+            string targetPlatformIdentifier,
+            string targetPlatformVersion,
+            string targetPlatformMinVersion)
+        {
+            return GetProjectFramework(
+                projectFilePath,
+                targetFrameworkMoniker,
+                targetFrameworkIdentifier,
+                targetFrameworkVersion,
+                targetFrameworkProfile,
+                targetPlatformIdentifier,
+                targetPlatformVersion,
+                targetPlatformMinVersion,
+                isXnaWindowsPhoneProject: false,
+                isManagementPackProject: false,
+                GetAsNuGetFramework());
+        }
+
         /// <summary>
         /// Determine the target framework of an msbuild project.
         /// </summary>
@@ -48,7 +73,20 @@ namespace NuGet.Commands
             bool isXnaWindowsPhoneProject,
             bool isManagementPackProject)
         {
-            return GetProjectFrameworks(projectFilePath, targetFrameworks, targetFramework, targetFrameworkMoniker, targetPlatformIdentifier, targetPlatformVersion, targetPlatformMinVersion, isXnaWindowsPhoneProject, isManagementPackProject, (e) => e);
+            return GetProjectFrameworks(
+                projectFilePath,
+                targetFrameworks,
+                targetFramework,
+                targetFrameworkMoniker,
+                targetFrameworkIdentifier: null,
+                targetFrameworkVersion: null,
+                targetFrameworkProfile: null,
+                targetPlatformIdentifier,
+                targetPlatformVersion,
+                targetPlatformMinVersion,
+                isXnaWindowsPhoneProject,
+                isManagementPackProject,
+                GetAsFrameworkString());
         }
 
         internal static IEnumerable<T> GetProjectFrameworks<T>(
@@ -56,12 +94,15 @@ namespace NuGet.Commands
             string targetFrameworks,
             string targetFramework,
             string targetFrameworkMoniker,
+            string targetFrameworkIdentifier,
+            string targetFrameworkVersion,
+            string targetFrameworkProfile,
             string targetPlatformIdentifier,
             string targetPlatformVersion,
             string targetPlatformMinVersion,
             bool isXnaWindowsPhoneProject,
             bool isManagementPackProject,
-            Func<string, T> valueFactory)
+            Func<object, T> valueFactory)
         {
             var frameworks = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -70,7 +111,7 @@ namespace NuGet.Commands
 
             if (frameworks.Count > 0)
             {
-                return RunValueFactory(valueFactory, frameworks);
+                return frameworks.Select(e => valueFactory(e));
             }
 
             // TargetFramework property
@@ -80,15 +121,15 @@ namespace NuGet.Commands
             {
                 frameworks.Add(currentFrameworkString);
 
-                return RunValueFactory(valueFactory, frameworks);
+                return frameworks.Select(e => valueFactory(e));
             }
 
             return new T[] { GetProjectFramework(
                 projectFilePath,
                 targetFrameworkMoniker,
-                targetFrameworkIdentifier: null,
-                targetFrameworkVersion: null,
-                targetFrameworkProfile: null,
+                targetFrameworkIdentifier,
+                targetFrameworkVersion,
+                targetFrameworkProfile,
                 targetPlatformIdentifier,
                 targetPlatformVersion,
                 targetPlatformMinVersion,
@@ -108,7 +149,7 @@ namespace NuGet.Commands
             string targetPlatformMinVersion,
             bool isXnaWindowsPhoneProject,
             bool isManagementPackProject,
-            Func<string, T> valueFactory)
+            Func<object, T> valueFactory)
         {
             // C++ check
             if (projectFilePath?.EndsWith(".vcxproj", StringComparison.OrdinalIgnoreCase) == true)
@@ -163,8 +204,11 @@ namespace NuGet.Commands
 
             // TargetFrameworkMoniker
             var currentFrameworkString = MSBuildStringUtility.TrimAndGetNullForEmpty(targetFrameworkMoniker);
+            var trimmedTargetFrameworkIdentifier = MSBuildStringUtility.TrimAndGetNullForEmpty(targetFrameworkIdentifier);
+            var trimmedTargetFrameworkVersion = MSBuildStringUtility.TrimAndGetNullForEmpty(targetFrameworkVersion);
+            var hasTFIandTFV = !string.IsNullOrEmpty(trimmedTargetFrameworkIdentifier) && !string.IsNullOrEmpty(trimmedTargetFrameworkVersion);
 
-            if (!string.IsNullOrEmpty(currentFrameworkString))
+            if (!string.IsNullOrEmpty(currentFrameworkString) || hasTFIandTFV)
             {
                 // XNA project lies about its true identity, reporting itself as a normal .NET 4.0 project.
                 // We detect it and changes its target framework to Silverlight4-WindowsPhone71
@@ -175,31 +219,20 @@ namespace NuGet.Commands
                     return valueFactory(currentFrameworkString);
                 }
 
-                NuGetFramework framework = default;
-                if (string.IsNullOrEmpty(targetFrameworkIdentifier) && string.IsNullOrEmpty(targetFrameworkVersion))
-                {
-                    framework = NuGetFramework.Parse(currentFrameworkString);
-                }
-                else
-                {
-                    // TODO NK - trim!
-                    framework = NuGetFramework.ParseComponents(targetFrameworkIdentifier, targetFrameworkVersion, targetFrameworkProfile, targetPlatformIdentifier, targetPlatformVersion);
-                }
-                return valueFactory(framework.ToString());
+                NuGetFramework framework = hasTFIandTFV ?
+                    NuGetFramework.ParseComponents(
+                           trimmedTargetFrameworkIdentifier,
+                           trimmedTargetFrameworkVersion,
+                           MSBuildStringUtility.TrimAndGetNullForEmpty(targetFrameworkProfile),
+                           MSBuildStringUtility.TrimAndGetNullForEmpty(targetPlatformIdentifier),
+                           MSBuildStringUtility.TrimAndGetNullForEmpty(targetPlatformVersion)) :
+                    NuGetFramework.Parse(currentFrameworkString);
+
+                return valueFactory(framework);
             }
 
             // Default to unsupported it no framework was found.
-            return valueFactory(FrameworkConstants.SpecialIdentifiers.Unsupported);
-        }
-
-        private static IEnumerable<T> RunValueFactory<T>(Func<string, T> valueFactory, SortedSet<string> frameworks)
-        {
-            var results = new List<T>();
-            foreach (var val in frameworks)
-            {
-                results.Add(valueFactory(val));
-            }
-            return results;
+            return valueFactory(NuGetFramework.UnsupportedFramework);
         }
 
         /// <summary>
@@ -257,6 +290,45 @@ namespace NuGet.Commands
             }
 
             return framework;
+        }
+
+        /// <summary>
+        /// Get a NuGetFramework out of the passed object. The argument is expected to either be a <see cref="NuGetFramework"/> or <see cref="string"/>.
+        /// </summary>
+        private static Func<object, NuGetFramework> GetAsNuGetFramework()
+        {
+            return (arg) =>
+            {
+                if (arg is NuGetFramework)
+                {
+                    return (NuGetFramework)arg;
+                }
+                if (arg is string frameworkString)
+                {
+                    return NuGetFramework.Parse(frameworkString);
+                }
+                throw new ArgumentException("Unexpected object type");
+            };
+        }
+
+        /// <summary>
+        /// Get a roundtrippable framework string out of the passed object. The argument is expected to either be a <see cref="NuGetFramework"/> or <see cref="string"/>.
+        /// </summary>
+        private static Func<object, string> GetAsFrameworkString()
+        {
+            return (arg) =>
+            {
+                if (arg is string)
+                {
+                    return (string)arg;
+                }
+                if (arg is NuGetFramework framework)
+                {
+                    return framework.DotNetFrameworkName;
+                }
+
+                throw new ArgumentException("Unexpected object type");
+            };
         }
     }
 }
