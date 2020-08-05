@@ -35,6 +35,12 @@ namespace NuGet.Commands
                 isXnaWindowsPhoneProject: false);
         }
 
+        /// <summary>
+        /// Given the properties from an msbuild project file and a the file path, infer the target framework.
+        /// This method prioritizes projects without a framework, such as vcxproj and accounts for the mismatching arguments in UAP projects, where the TFI and TFV are set but should be ignored.
+        /// Likewise, this method will *ignore* unnecessary properties, such as TPI and TPV when profiles are used, and frameworks that do not support platforms have some default values.
+        /// </summary>
+        /// <returns>The inferred framework. Unsupported otherwise.</returns>
         public static NuGetFramework GetProjectFramework(
             string projectFilePath,
             string targetFrameworkMoniker,

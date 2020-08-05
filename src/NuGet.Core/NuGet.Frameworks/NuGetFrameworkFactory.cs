@@ -79,8 +79,15 @@ namespace NuGet.Frameworks
         }
 
         /// <summary>
-        /// Creates a NuGetFramework from individual components, using the given mappings
+        /// Creates a NuGetFramework from individual components, using the given mappings.
+        /// This method may have individual component preference, as described in the remarks.
         /// </summary>
+        /// <remarks>
+        /// Profiles and TargetPlatforms can't mix. As such the precedence order is profile over target platforms (TPI, TPV).
+        /// .NETCoreApp,Version=v5.0 and later do not support profiles.
+        /// Target Platforms are ignored for any frameworks not supporting them.
+        /// This allows to handle the old project scenarios where the TargetPlatformIdentifier and TargetPlatformVersion may be set to Windows and v7.0 respectively.
+        /// </remarks>
         internal static NuGetFramework ParseComponents(string targetFrameworkIdentifier, string targetFrameworkVersion, string targetFrameworkProfile, string targetPlatformIdentifier, string targetPlatformVersion, IFrameworkNameProvider mappings)
         {
             if (string.IsNullOrEmpty(targetFrameworkIdentifier))
