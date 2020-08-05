@@ -166,27 +166,39 @@ namespace NuGet.Frameworks
                 }
             }
 
-            if (!string.IsNullOrEmpty(targetPlatformVersion))
+            // Profiles take precedence over TPI/TPV
+            if (string.IsNullOrEmpty(profile))
             {
-                targetPlatformVersion = targetPlatformVersion.TrimStart('v');
-                if (targetPlatformVersion.IndexOf('.') < 0)
+                if (version.Major >= 5 &&
+                    StringComparer.OrdinalIgnoreCase.Equals(FrameworkConstants.FrameworkIdentifiers.NetCoreApp, framework))
                 {
-                    targetPlatformVersion += ".0";
-                }
+                    if (!string.IsNullOrEmpty(targetPlatformVersion))
+                    {
+                        targetPlatformVersion = targetPlatformVersion.TrimStart('v');
+                        if (targetPlatformVersion.IndexOf('.') < 0)
+                        {
+                            targetPlatformVersion += ".0";
+                        }
 
-                if (!Version.TryParse(targetPlatformVersion, out platformVersion))
+                        if (!Version.TryParse(targetPlatformVersion, out platformVersion))
+                        {
+                            throw new ArgumentException(string.Format(
+                                CultureInfo.CurrentCulture,
+                                Strings.InvalidPlatformVersion,
+                                targetPlatformVersion));
+                        }
+                    }
+                    result = new NuGetFramework(framework, version, targetPlatformIdentifier ?? string.Empty, platformVersion);
+                }
+                else
                 {
-                    throw new ArgumentException(string.Format(
-                        CultureInfo.CurrentCulture,
-                        Strings.InvalidPlatformVersion,
-                        targetPlatformVersion));
+                    result = new NuGetFramework(framework, version);
                 }
             }
-
-            if (version.Major >= 5
-                && StringComparer.OrdinalIgnoreCase.Equals(FrameworkConstants.FrameworkIdentifiers.NetCoreApp, framework))
+            else
             {
-                if (!string.IsNullOrEmpty(profile))
+                if (version.Major >= 5 &&
+                    StringComparer.OrdinalIgnoreCase.Equals(FrameworkConstants.FrameworkIdentifiers.NetCoreApp, framework))
                 {
                     throw new ArgumentException(string.Format(
                         CultureInfo.CurrentCulture,
@@ -194,20 +206,6 @@ namespace NuGet.Frameworks
                         profile
                     ));
                 }
-
-                result = new NuGetFramework(framework, version, targetPlatformIdentifier ?? string.Empty, platformVersion);
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(targetPlatformIdentifier))
-                {
-                    throw new ArgumentException(string.Format(
-                        CultureInfo.CurrentCulture,
-                        Strings.FrameworkDoesNotSupportPlatforms,
-                        targetPlatformIdentifier
-                    ));
-                }
-
                 result = new NuGetFramework(framework, version, profile);
             }
 

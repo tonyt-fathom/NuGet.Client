@@ -236,7 +236,7 @@ namespace NuGet.Commands.Test
         [InlineData(null, null, null, "", "ios", "v21.0", "", "unsupported")]
         [InlineData(null, ".NETCoreApp", "v6.0", "", "UAP", "10.0.1.2", "", "uap10.0.1.2")]
         [InlineData(null, ".NETCoreApp", "v6.0", "", "UAP", "10.0.1.2", "10.0.1.3", "uap10.0.1.3")]
-        [InlineData(".NETCoreApp,Version=v3.0", ".NETCoreApp", "v3.0", "", "android", "10", "", "net3.0")]
+        [InlineData(".NETCoreApp,Version=v3.0", ".NETCoreApp", "v3.0", "", "android", "10", "", "netcoreapp3.0")]
         public void GetProjectFramework_WithCanonicalProperties_Succeeds(
                 string targetFrameworkMoniker,
                 string targetFrameworkIdentifier,
@@ -264,7 +264,6 @@ namespace NuGet.Commands.Test
 
         [Theory]
         [InlineData(null, ".NETCoreApp", "v6.0", "", "ios", "5.0-preview.3", "")]
-        [InlineData(null, ".IncorrectIdentifier", "v6.0", "", "ios", "5.0", "")]
         [InlineData(null, ".NETCoreApp", "v6.0-preview.3", "", "ios", "5.0", "")]
         [InlineData(".NETCoreApp,Version=v.5.0", ".NETCoreApp", "v5.0", "NET50CannotHaveProfiles", "android", "10", "")]
         public void GetProjectFramework_WithInvalidInput_Throws(
