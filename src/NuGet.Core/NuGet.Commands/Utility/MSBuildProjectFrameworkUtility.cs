@@ -56,7 +56,7 @@ namespace NuGet.Commands
                 targetPlatformMinVersion,
                 isXnaWindowsPhoneProject: false,
                 isManagementPackProject: false,
-                GetAsNuGetFramework());
+                GetAsNuGetFramework);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace NuGet.Commands
                 targetPlatformMinVersion,
                 isXnaWindowsPhoneProject,
                 isManagementPackProject,
-                GetAsFrameworkString());
+                GetAsFrameworkString);
         }
 
         internal static IEnumerable<T> GetProjectFrameworks<T>(
@@ -295,40 +295,34 @@ namespace NuGet.Commands
         /// <summary>
         /// Get a NuGetFramework out of the passed object. The argument is expected to either be a <see cref="NuGetFramework"/> or <see cref="string"/>.
         /// </summary>
-        private static Func<object, NuGetFramework> GetAsNuGetFramework()
+        private static NuGetFramework GetAsNuGetFramework(object arg)
         {
-            return (arg) =>
+            if (arg is NuGetFramework)
             {
-                if (arg is NuGetFramework)
-                {
-                    return (NuGetFramework)arg;
-                }
-                if (arg is string frameworkString)
-                {
-                    return NuGetFramework.Parse(frameworkString);
-                }
-                throw new ArgumentException("Unexpected object type");
-            };
+                return (NuGetFramework)arg;
+            }
+            if (arg is string frameworkString)
+            {
+                return NuGetFramework.Parse(frameworkString);
+            }
+            throw new ArgumentException("Unexpected object type");
         }
 
         /// <summary>
         /// Get a roundtrippable framework string out of the passed object. The argument is expected to either be a <see cref="NuGetFramework"/> or <see cref="string"/>.
         /// </summary>
-        private static Func<object, string> GetAsFrameworkString()
+        private static string GetAsFrameworkString(object arg)
         {
-            return (arg) =>
+            if (arg is string)
             {
-                if (arg is string)
-                {
-                    return (string)arg;
-                }
-                if (arg is NuGetFramework framework)
-                {
-                    return framework.DotNetFrameworkName;
-                }
+                return (string)arg;
+            }
+            if (arg is NuGetFramework framework)
+            {
+                return framework.DotNetFrameworkName;
+            }
 
-                throw new ArgumentException("Unexpected object type");
-            };
+            throw new ArgumentException("Unexpected object type");
         }
     }
 }
